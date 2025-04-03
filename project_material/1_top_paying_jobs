@@ -46,7 +46,7 @@ FROM
 LEFT JOIN company_dim ON job_postings_fact.company_id = company_dim.company_id
 WHERE 
     job_location LIKE '%Amsterdam%' AND
-    job_title_short = 'Data Analyst' AND
+    job_title_short IN ('Data Analyst','Business Analyst') AND
     salary_year_avg IS NOT NULL 
 ORDER BY
     salary_year_avg DESC

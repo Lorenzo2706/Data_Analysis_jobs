@@ -1,36 +1,15 @@
 /*
 Question: What are the top-paying data or business analyst jobs in Amsterdam (2023 data)?
-- Identify the top 10 highest-paying Analyst roles (either data or business analyst) 
-that are available in Amsterdam.
+- Identify the top 10 highest-paying Analyst roles for Data Anlysts that are 
+available in Amsterdam.
 - Focuses on job postings with specified salaries.
 - Why? Aims to highlight the top-paying opportunities for Analysts, offering 
 insights into employment options in Amsterdam.
 */
 
 
--- First assessment: how many jobs are in Amsterdam for data Analyst?
-SELECT
-    count(job_id)
-FROM 
-    job_postings_fact
-WHERE 
-    job_location LIKE '%Amsterdam%' AND
-    job_title_short IN ('Data Analyst', 'Business Analyst');
--- Answer:1607
 
-
--- Second Assessment: how many have salary in the job posting?
-SELECT
-    count(job_id)
-FROM 
-    job_postings_fact
-WHERE 
-    job_location LIKE '%Amsterdam%' AND
-    job_title_short IN ('Data Analyst', 'Business Analyst') AND
-    salary_year_avg IS NOT NULL;
--- only 14
-
--- This Assessment: Which are the top 10 Analyst roles in Amsterdam?
+-- Top 10 Analyst roles in Amsterdam
 
 SELECT
     job_id,
@@ -51,3 +30,6 @@ WHERE
 ORDER BY
     salary_year_avg DESC
 LIMIT 10;
+
+
+

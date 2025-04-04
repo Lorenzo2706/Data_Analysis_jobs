@@ -1,4 +1,10 @@
-
+/*
+Question: which role pays better in Amsterdam, Data Analyst or Business Analyst?
+- first assess how many jobs are in Amsterdam for data Analyst and Business Analyst
+- second assess how many have salary in the job posting
+- third, calculate the median and average salary for both roles in Amsterdam
+- fourth, compare the two roles and see which one pays better
+*/
 
 
 -- First assessment: how many jobs are in Amsterdam for data Analyst?
@@ -23,6 +29,7 @@ WHERE
     salary_year_avg IS NOT NULL;
 -- only 14
 
+
 -- Statistics for Data Analyst and Business Analyst roles in Amsterdam
 WITH median_salary AS (
     SELECT
@@ -39,9 +46,9 @@ WITH median_salary AS (
 )
 SELECT
     job_postings_fact.job_title_short AS role,
-    median_salary.median,
-    AVG(salary_year_avg) AS avg_salary,
-    COUNT(job_id) AS job_count
+    COUNT(job_id) AS job_count,
+    ROUND (AVG(salary_year_avg)) AS avg_salary,
+    median_salary.median
 FROM job_postings_fact
 LEFT JOIN median_salary ON job_postings_fact.job_title_short = median_salary.job_title_short
 WHERE 

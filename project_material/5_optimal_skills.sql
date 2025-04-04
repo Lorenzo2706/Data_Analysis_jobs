@@ -1,7 +1,7 @@
 /*
 What are the most optimal skills (meaning in high demand and high salary) skills 
 to learn to get a job in Amsterdam as Data Analyst and Business Analyst?
-- create 2 queries for each job type by linking former insights
+- create 2 queries for each job type by linking former insights and save time
 */
 
 -- Data Analyst

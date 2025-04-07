@@ -168,4 +168,170 @@ INNER JOIN skills_dim ON skills_dim.skill_id = skills_job_dim.skill_id
 ORDER BY 
     top_paying_jobs.yearly_salary DESC;
 ```
+A series of insights come from this analysis:
+- **SQL is king**: As expected, SQL leads the way (6 mentions), reinforcing its necessity for any data analyst role.
+- **Python is nearly as vital** (5 mentions): It’s used for data manipulation, analysis, and increasingly for building data pipelines and automation.
+- **Visualization tools matter**:
 
+   - Excel (3) remains essential even in high-paying roles.
+   - Looker (3) is clearly in-demand, especially at tech-focused firms like Adyen.
+   - Tableau, Power BI, and Airflow appear but only once each—valuable, but not deal-breakers.
+
+- **Statistical languages like R and Go**: Both appear more than once.
+- **Cloud & Big Data tools**: mentioning at least once differtent cloud skills (Hadoop, Spark, NoSQL, AWS, Azure), indicates a niche request for data engeneering skills together with data analytics competences.
+- **Office tools are still listed**: Word, Outlook, PowerPoint, MS Access—while not “hot tech,” they’re part of standard enterprise data workflows.
+![Skills per top paying jobs](/assets/Table%203.png)
+*Count of mentions for skills in top paying jobs*
+
+### 4. Trending Skills for Data Analysts in Amsterdam
+The following query aims to assess the most in demand skills for Data Analyst in Amsterdam, not focusing on salary parameters as done in the previous query
+```sql
+SELECT
+    skills_dim.skills AS skill_name,
+    COUNT(job_postings_fact.job_id) AS job_count
+FROM job_postings_fact
+INNER JOIN skills_job_dim ON skills_job_dim.job_id = job_postings_fact.job_id 
+INNER JOIN skills_dim ON skills_dim.skill_id = skills_job_dim.skill_id
+WHERE
+    job_title_short = 'Data Analyst' AND
+    job_location LIKE '%Amsterdam%'
+GROUP BY
+    skill_name
+ORDER BY
+    job_count DESC
+LIMIT 5;
+```
+Two immediate deductions can be made from this analysis:
+- **SQL and Excel remain fundamental**, emphasizing the need for strong foundational skills in data processing and spreadsheet manipulation.
+- **Programming and Visualization Tools like Python, R, and Tableau are essential**, pointing towards the increasing importance of technical skills in data storytelling and decision support.
+
+![Demand per skill](/assets/Table%204.png)
+*Table with demand per skill*
+
+### 5. Top skills based on salary
+After having identified the skills associated with the top paying jobs and the global demand for skills in Amsterdam, next analysis focuses on average salary per skill.
+```sql
+SELECT
+    skills_dim.skills AS skill_name,
+    ROUND( AVG(salary_year_avg),0) AS avg_salary
+FROM
+    job_postings_fact
+INNER JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
+INNER JOIN skills_dim ON skills_dim.skill_id = skills_job_dim.skill_id
+WHERE
+    job_title_short = 'Data Analyst' AND
+    job_location LIKE '%Amsterdam%'AND
+    salary_year_avg IS NOT NULL
+GROUP BY
+    skill_name
+ORDER BY
+    avg_salary DESC
+LIMIT 25;
+```
+Here a breakdown of the top 25 paying skills in Amsterdam:
+- **Cloud and Big Data skills dominate the top**: AWS, Azure, NoSQL, and Hadoop are extremely valuable.
+- **Programming languages like Go and R also command high pay**.
+- **Python ($95,442) and SQL ($95,442) are standard must-haves** but don’t drive the highest salary on their own.
+- **Excel ($99,469) and Tableau ($111,202) are slightly better compensated**, especially when paired with more technical skills.
+- **Airflow, VBA, and Spark sit in a mid-high salary range** ($111K–$122K), great for analysts moving into data engineering workflows.
+![Top Paying skills](/assets/Table%205.png)
+*Table with top 10 skills per average salary*
+
+### 6. Most optimal skills to learn
+Last analysis aims to identify the optimal skills to focus on as to build a career into Data Analytics. For this assessment, previous queries are joined to find the skills that are most in demand and pay the most.
+```sql
+WITH skill_demand AS (
+SELECT
+    skills_dim.skill_id,
+    skills_dim.skills AS skill_name,
+    COUNT(job_postings_fact.job_id) AS demand
+FROM job_postings_fact
+INNER JOIN skills_job_dim ON skills_job_dim.job_id = job_postings_fact.job_id 
+INNER JOIN skills_dim ON skills_dim.skill_id = skills_job_dim.skill_id
+WHERE
+    job_title_short = 'Data Analyst' AND
+    job_location LIKE '%Amsterdam%'
+GROUP BY
+    skills_dim.skill_id
+), average_salary AS (
+    SELECT
+        skills_job_dim.skill_id,
+        ROUND(AVG(salary_year_avg),0) AS avg_salary
+    FROM
+        job_postings_fact
+    INNER JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
+    INNER JOIN skills_dim ON skills_dim.skill_id = skills_job_dim.skill_id
+    WHERE
+        job_title_short = 'Data Analyst' AND
+        job_location LIKE '%Amsterdam%'AND
+        salary_year_avg IS NOT NULL
+    GROUP BY
+        skills_job_dim.skill_id
+)
+SELECT
+    skill_demand.skill_id,
+    skill_demand.skill_name,
+    skill_demand.demand,
+    average_salary.avg_salary
+FROM
+    skill_demand
+INNER JOIN average_salary ON skill_demand.skill_id = average_salary.skill_id
+WHERE
+    demand > 10
+ORDER BY
+    avg_salary DESC,
+    demand
+LIMIT 25;
+```
+![Optimal Skills for Data Analysts](/assets/Table%206.png)
+*Scatter Plot made in Excel showing the top 25 skill by Salary and Demand*
+
+Few considerations on the optimal skills:
+
+1. **Programming & Query Languages – Top Priority**
+    - *Why it matters*: These are core technical skills. Every data analyst role requires at least one of them.
+    - *Key skills*:
+        - **Python** – Extremely high demand; versatile and beginner-friendly.
+        - **SQL** – The most demanded skill in the market. Essential for data access and wrangling.
+        - **R** – Not as universal as Python, but offers strong salaries and is well-respected in statistical fields
+    - *Verdict*: **Must-have**. These are foundational skills and open the door to most data roles.
+2. **Cloud & Big Data Tools – High Salary, Niche Demand**
+    - *Why it matters*: Cloud and big data expertise is becoming increasingly important in data pipelines and enterprise-scale analysis.
+    - *Key skills*:
+        - **AWS & Azure** – Command some of the highest salaries. Great for analysts working closely with cloud infrastructure or moving toward data engineering.
+        - **Spark, Airflow, Hadoop, Pyspark** – Offer excellent pay but are in lower demand compared to core programming/BI tools.
+    - *Verdict*: **Strategic advantage**. Worth learning if you're aiming for high-paying roles in larger organizations or want to specialize in data engineering.
+3. **Business Intelligence (BI) & Visualization Tools – High Demand & Practical**
+    - *Why it matters*: BI tools are **essential for communicating data insights** to stakeholders.
+    - *Key skills*:
+        - **Tableau** – High in both demand and salary; a great visualization tool for dashboards.
+        - **Power BI** – Very popular in enterprise environments; slightly lower pay but very accessible.
+        - **Looker** – Gaining traction in modern data stacks.
+    - *Verdict*: **Should-have**. If you're focusing on insight delivery and dashboarding, these are a must.
+4. **Productivity & Enterprise Tools – Low Strategic Value**
+    - *Why it matters*: These are basic tools for workplace communication but don’t offer career growth.
+    - *Key skills*:
+        - **Excel** – High demand, decent salary. Still heavily used and good to master.
+        - **PowerPoint, Word, SAP, VBA** – Often required, but low pay and low differentiation.
+    - *Verdict*: **Good to know**, but don’t spend too much effort learning these beyond the basics.
+
+Final takeaways:
+- Start with: Python, SQL, Excel
+- Add BI tools: Tableau or Power BI
+- Level up with cloud/data tools: AWS, Azure, Spark, Airflow
+
+# What I Learnt
+I am safe to affirm that during this project I have enhanced my SQL capabilities by:
+- **Creating complex queries**: by merging queries and joining tables I learnt how to navigate across data
+- **Aggregating data**: I improved my understanding of SQL operators and grouping function to extrapolate key metrics 
+- **Delivering actionable insights**: Leveled up my real-world puzzle-solving skills, turning questions into actionable, insightful SQL queries.
+
+# Conclusions
+Using real world data, I tried to optimize my job seeking journey by assessing which is the role to focus my applications and the skills that I need to develop now and in the future to get a career into Data Analytics in Amsterdam. My conclusions are:
+- Data Analyst jobs can pay up to € 177 K, making this career path very rewarding from a salary standpoint
+
+- To get a very high salary it is necessary to specialize on niche cloud skills such as AWS or Azure, that are less in demand on the market
+
+- Very few jobs declare the salary in the job posting compared to the totality of the postings. Therefore, due to lack of data this analysis is not perfect, but still valuable.
+
+- SQL is a critical skill both in terms of salary and in terms of demand, making it a must-have to land a job offer and therefore the most optimal skill to learn.

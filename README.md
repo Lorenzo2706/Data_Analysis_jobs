@@ -9,7 +9,7 @@ The underneath assumptions are:
 The rationale behind is to make my job seeking experience more effective and targeted, avoiding wasting my time in building non relevant skills.
 
 To achieve this objective, I have broken down the overral terget finding into sub-questions:
-1) *Which job pays the most between Data Analyst and Business Analyst?*  first step is to decide where to focus my research.
+1) *Which job pays the most between Data Analyst and Business Analyst?*  First step is to decide where to focus my research.
 2) *What are the top-paying jobs for the selected role?* The assumption is that the highest paid jobs are representative to assess the best skills to learn
 3) *What are the skills required for these top-paying roles?* 
 4) *What are the most in-demand skills for my role?*
@@ -100,9 +100,9 @@ GROUP BY
 
 
 #### Key Takeaways:
-- Data Analyst is the better role in terms of salary and job availability.
-- The higher demand for Data Analysts makes it a more stable career choice.
-- However, Business Analysts may have different responsibilities (strategy, operations), which could align better with non-technical career paths.
+- **Data Analyst is the better role** in terms of salary and job availability.
+- The **higher demand for Data Analysts** makes it a more stable career choice.
+- However, **Business Analysts may have different responsibilities** (strategy, operations), which could align better with non-technical career paths.
 
 ### 2. Top paying jobs for Data Analyst
 

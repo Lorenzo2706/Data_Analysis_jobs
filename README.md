@@ -10,8 +10,8 @@ The rationale behind is to make my job seeking experience more effective and tar
 
 To achieve this objective, I have broken down the overral terget finding into sub-questions:
 1) *Which job pays the most between Data Analyst and Business Analyst?*  First step is to decide where to focus my research.
-2) *What are the top-paying jobs for the selected role?* The assumption is that the highest paid jobs are representative to assess the best skills to learn
-3) *What are the skills required for these top-paying roles?* 
+2) *What are the top-paying jobs for the selected jobs?* The assumption is that the highest paid jobs are representative to assess the best skills to learn
+3) *What are the skills required for these top-paying jobs?* 
 4) *What are the most in-demand skills for my role?*
 5) *What are the top skills based on salary for my role?*
 6) *What are the most optimal skills to learn?* For optimal is intended in high demand and highly paying
@@ -105,5 +105,67 @@ GROUP BY
 - However, **Business Analysts may have different responsibilities** (strategy, operations), which could align better with non-technical career paths.
 
 ### 2. Top paying jobs for Data Analyst
+After having chosen to focus on Data Analyst roles only, next step is to identify the top paying jobs in this category, filtering by position, location and salary specified.
+```sql
+SELECT
+    job_id,
+    name AS company_name,
+    job_title_short AS job_title,
+    job_title AS job_description,
+    job_schedule_type AS contract_type,
+    salary_year_avg AS yearly_salary,
+    job_posted_date ::DATE,
+    job_location
+FROM 
+    job_postings_fact
+LEFT JOIN company_dim ON job_postings_fact.company_id = company_dim.company_id
+WHERE 
+    job_location LIKE '%Amsterdam%' AND
+    job_title_short IN ('Data Analyst') AND
+    salary_year_avg IS NOT NULL 
+ORDER BY
+    salary_year_avg DESC
+LIMIT 10;
+```
+The evidences from this analysis suggest that:
+- **Salary Range & Distribution**: Salaries span from €67K to €177K, showing the possibility of a rewarding career oppurtunities. The distribution shows clear salary bands: top-tier roles involve hybrid skills (data + engineering), mid-tier reflects experienced analysts, and lower-tier roles are entry-level or specialist.
+- **Industry Trends**: Tech & SaaS firms (ServiceNow, Netflix) dominate the high end of the pay scale. Fintech (Adyen) and automotive (Lucid Motors) offer steady mid-to-high salaries. Energy (Vattenfall) and AI/Cloud (Databricks) present opportunities at the lower end—likely due to role type (e.g. junior, internship) rather than industry valuation.
+- **Seniority Trends**: The highest salaries are tied to senior or hybrid roles, likely involving core Data Analysts capabilities together with  engineering, leadership, or cross-functional skills. Mid-level roles remain strong around €105K–€111K, while entry-level positions sit below €90K. A clear pattern seems to emerge: more technical + strategic = higher compensation. The next steps of the analysis will try to validate this point.
 
+![Top Paying Jobs in Amsterdam](/assets/Table%202.png)
+*Bar chart showing the salary for the top 10 salaries for data analysts; ChatGPT generated this graph from my SQL query results*
+
+### 3. Skills for top paying jobs
+Once identified top paying jobs, it is time to find the associated skills that are required for applying to these offerings. To do that, I joined the job posting table with the skills table and counted the skills mentioned.
+```sql
+WITH top_paying_jobs AS (
+    SELECT
+        job_id,
+        name AS company_name,
+        job_title_short AS job_title,
+        job_title AS job_description,
+        job_location,
+        job_schedule_type AS contract_type,
+        salary_year_avg AS yearly_salary,
+        job_posted_date ::DATE
+    FROM 
+        job_postings_fact
+    LEFT JOIN company_dim ON job_postings_fact.company_id = company_dim.company_id
+    WHERE 
+        job_location LIKE '%Amsterdam%' AND
+        job_title_short = 'Data Analyst' AND
+        salary_year_avg IS NOT NULL 
+    ORDER BY
+        salary_year_avg DESC
+    LIMIT 10
+)
+SELECT
+    skills_dim.skills AS skill_name,
+    top_paying_jobs.*
+FROM top_paying_jobs
+INNER JOIN skills_job_dim ON skills_job_dim.job_id = top_paying_jobs.job_id 
+INNER JOIN skills_dim ON skills_dim.skill_id = skills_job_dim.skill_id
+ORDER BY 
+    top_paying_jobs.yearly_salary DESC;
+```
 

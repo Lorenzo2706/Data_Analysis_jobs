@@ -16,10 +16,10 @@ SELECT
     name AS company_name,
     job_title_short AS job_title,
     job_title AS job_description,
-    job_location,
     job_schedule_type AS contract_type,
     salary_year_avg AS yearly_salary,
-    job_posted_date ::DATE
+    job_posted_date ::DATE,
+    job_location
 FROM 
     job_postings_fact
 LEFT JOIN company_dim ON job_postings_fact.company_id = company_dim.company_id
